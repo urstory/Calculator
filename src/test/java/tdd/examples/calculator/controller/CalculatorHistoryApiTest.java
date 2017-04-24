@@ -26,6 +26,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class CalculatorHistoryApiTest {
 	@Autowired
     WebApplicationContext wac;
+	@Autowired
+    CalculatorHistoryController calculatorHistoryController;
 
 	MockMvc mvc;
 	
@@ -41,4 +43,34 @@ public class CalculatorHistoryApiTest {
 
 	}
 
+	@Test
+	public void shouldCreate() throws Exception {
+		String requestBody = "{\"value1\":5, \"operation\":\"+\", \"value2\":10,\"result\":15}";
+
+		mvc.perform(
+				post("/calculatorHistories")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(requestBody)
+		)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").exists())
+				.andExpect(jsonPath("$.value1").value(5))
+				.andExpect(jsonPath("$.operation").value("+"))
+				.andExpect(jsonPath("$.value2").value(10))
+				.andExpect(jsonPath("$.result").value(15));
+	}
+
+
+	@Test
+	public void shoulDelete() throws Exception {
+		CalculatorHistory calculatorHistory = new CalculatorHistory(5, "+", 10, 15);
+		CalculatorHistory calculatorHistoryResult = calculatorHistoryController.create(calculatorHistory);
+
+
+		mvc.perform(
+				delete("/calculatorHistories/{id}", calculatorHistoryResult.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+		)
+				.andExpect(status().isOk());
+	}
 }

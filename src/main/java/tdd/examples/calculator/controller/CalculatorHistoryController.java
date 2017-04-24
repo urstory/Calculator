@@ -18,21 +18,21 @@ public class CalculatorHistoryController {
     CalculatorHistoryService calculatorHistoryService;
 
     @GetMapping(path="/calculatorHistories")
-    public CollectionResult<List<CalculatorHistory>> getCalculatorHistories(){
+    public CollectionResult<List<CalculatorHistory>> list(){
 
         return new CollectionResult<>(calculatorHistoryService.getCalculatorHistories());
 
     }
 
     @PostMapping(path="/calculatorHistories")
-    public CalculatorHistory getCalculatorHistories(@RequestBody CalculatorHistory calculatorHistory){
+    public CalculatorHistory create(@RequestBody CalculatorHistory calculatorHistory){
         CalculatorHistory calculatorHistoryResult = calculatorHistoryService.create(calculatorHistory);
         return calculatorHistoryResult;
 
     }
 
     @DeleteMapping(path="/calculatorHistories/{id}")
-    public int deleteCalculatorHistory(@PathVariable(name = "id")Long id) {
+    public int delete(@PathVariable(name = "id")Long id) {
         int deleteCount = calculatorHistoryService.delete(id);
         return deleteCount;
     }
