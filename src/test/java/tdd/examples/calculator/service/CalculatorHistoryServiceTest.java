@@ -2,6 +2,7 @@ package tdd.examples.calculator.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,6 +21,8 @@ import tdd.examples.calculator.config.ServletContextConfig;
 import tdd.examples.calculator.controller.CalculatorHistoryController;
 import tdd.examples.calculator.dao.CalculatorHistoryDao;
 import tdd.examples.calculator.domain.CalculatorHistory;
+import tdd.examples.calculator.service.impl.CalculatorHistoryServiceImpl;
+import tdd.examples.test.IntegrationTest;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
@@ -29,11 +32,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {RootApplicationContextConfig.class})
 public class CalculatorHistoryServiceTest {
 	@InjectMocks
-	CalculatorHistoryService calculatorHistoryService;
+	CalculatorHistoryService calculatorHistoryService = new CalculatorHistoryServiceImpl();
 
 	@Mock
 	CalculatorHistoryDao calculatorHistoryDao;
@@ -47,13 +51,11 @@ public class CalculatorHistoryServiceTest {
 		MockitoAnnotations.initMocks(this);
 
 		when(calculatorHistoryDao.insert(any(CalculatorHistory.class))).thenAnswer(
-				new Answer<CalculatorHistory>() {
-					public CalculatorHistory answer(InvocationOnMock invocation) {
+				new Answer<Long>() {
+					public Long answer(InvocationOnMock invocation) {
 						Object[] args = invocation.getArguments(); // arguments
-						CalculatorHistoryService mock = (CalculatorHistoryService)invocation.getMock(); // mock itself
-						CalculatorHistory arg = (CalculatorHistory)args[0];
-						arg.setId(id++);
-						return arg;
+						CalculatorHistoryDao mock = (CalculatorHistoryDao)invocation.getMock(); // mock itself
+						return id++;
 					}
 				}
 		);
@@ -62,7 +64,7 @@ public class CalculatorHistoryServiceTest {
 				new Answer<Integer>() {
 					public Integer answer(InvocationOnMock invocation) {
 						Object[] args = invocation.getArguments(); // arguments
-						CalculatorHistoryService mock = (CalculatorHistoryService)invocation.getMock(); // mock itself
+						CalculatorHistoryDao mock = (CalculatorHistoryDao)invocation.getMock(); // mock itself
 						return 1;
 					}
 				}

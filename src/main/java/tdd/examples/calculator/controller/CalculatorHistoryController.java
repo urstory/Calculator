@@ -26,6 +26,21 @@ public class CalculatorHistoryController {
 
     @PostMapping(path="/calculatorHistories")
     public CalculatorHistory create(@RequestBody CalculatorHistory calculatorHistory){
+        int result = 0;
+        if("+".equals(calculatorHistory.getOperation())){
+            result = calculatorHistory.getValue1() + calculatorHistory.getValue2();
+        }else if("-".equals(calculatorHistory.getOperation())){
+            result = calculatorHistory.getValue1() - calculatorHistory.getValue2();
+        }else if("*".equals(calculatorHistory.getOperation())){
+            result = calculatorHistory.getValue1() * calculatorHistory.getValue2();
+        }else if("/".equals(calculatorHistory.getOperation())){
+            if(calculatorHistory.getValue2() == 0)
+                throw new IllegalArgumentException("0으로 나눌수 없습니다.");
+            result = calculatorHistory.getValue1() / calculatorHistory.getValue2();
+        }else{
+            throw new IllegalArgumentException("지원하지 않는 operation입니다.");
+        }
+        calculatorHistory.setResult(result);
         CalculatorHistory calculatorHistoryResult = calculatorHistoryService.create(calculatorHistory);
         return calculatorHistoryResult;
 

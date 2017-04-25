@@ -2,6 +2,7 @@ package tdd.examples.calculator.controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,10 +18,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.util.NestedServletException;
 import tdd.examples.calculator.config.RootApplicationContextConfig;
 import tdd.examples.calculator.config.ServletContextConfig;
 import tdd.examples.calculator.domain.CalculatorHistory;
 import tdd.examples.calculator.service.CalculatorHistoryService;
+import tdd.examples.test.IntegrationTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
+@Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ServletContextConfig.class, RootApplicationContextConfig.class})
 @WebAppConfiguration
@@ -86,9 +90,24 @@ public class CalculatorHistoryApiTest2 {
 
 	}
 
+
+	@Test(expected = NestedServletException.class)
+	public void test_0으로_나눌때_오류발생() throws Exception {
+		String requestBody = "{\"value1\":5, \"operation\":\"/\", \"value2\":0}";
+
+		mvc.perform(
+				post("/calculatorHistories")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(requestBody)
+		)
+				.andExpect(status().isInternalServerError());
+		verify(calculatorHistoryService).create(any(CalculatorHistory.class));
+	}
+
+
 	@Test
 	public void shouldCreate() throws Exception {
-		String requestBody = "{\"value1\":5, \"operation\":\"+\", \"value2\":10,\"result\":15}";
+		String requestBody = "{\"value1\":5, \"operation\":\"+\", \"value2\":10}";
 
 		mvc.perform(
 				post("/calculatorHistories")
@@ -103,13 +122,12 @@ public class CalculatorHistoryApiTest2 {
 				.andExpect(jsonPath("$.result").value(15));
 
 		verify(calculatorHistoryService).create(any(CalculatorHistory.class));
-
 	}
 
 
 	@Test
 	public void shoulDelete() throws Exception {
-		CalculatorHistory calculatorHistory = new CalculatorHistory(5, "+", 10, 15);
+		CalculatorHistory calculatorHistory = new CalculatorHistory(5, "+", 10);
 		CalculatorHistory calculatorHistoryResult = calculatorHistoryController.create(calculatorHistory);
 
 

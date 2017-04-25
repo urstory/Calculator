@@ -10,6 +10,12 @@ public class CalculatorHistory {
     public CalculatorHistory(){
     }
 
+    public CalculatorHistory(int value1, String operation, int value2) {
+        this.value1 = value1;
+        this.operation = operation;
+        this.value2 = value2;
+    }
+
     public CalculatorHistory(int value1, String operation, int value2, int result) {
         this.value1 = value1;
         this.operation = operation;

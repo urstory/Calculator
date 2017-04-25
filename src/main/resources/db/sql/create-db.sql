@@ -1,3 +1,5 @@
+DROP TABLE calculator_history IF EXISTS ;
+
 CREATE TABLE calculator_history (
   id         INTEGER auto_increment PRIMARY KEY,
   value1 INTEGER,
